@@ -1,4 +1,4 @@
-module Util where
+module Util.Util where
 
 import Control.Applicative (liftA2)
 import Data.Bifunctor (Bifunctor (bimap))
