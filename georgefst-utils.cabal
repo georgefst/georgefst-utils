@@ -1,0 +1,53 @@
+cabal-version:       3.0
+name:                georgefst-utils
+version:             0.1.0.0
+
+library
+    exposed-modules:
+        Util
+    build-depends:
+        base,
+        bytestring,
+        containers,
+        directory,
+        extra,
+        filepath,
+        mtl,
+        pretty-simple,
+        process,
+        safe,
+        text,
+    hs-source-dirs: src
+    ghc-options:
+        -Wall
+    default-language: Haskell2010
+    default-extensions:
+        AllowAmbiguousTypes
+        BlockArguments
+        ConstraintKinds
+        DeriveFoldable
+        DeriveFunctor
+        DeriveGeneric
+        DeriveTraversable
+        DerivingStrategies
+        FlexibleContexts
+        FlexibleInstances
+        FunctionalDependencies
+        GADTs
+        GeneralisedNewtypeDeriving
+        ImportQualifiedPost
+        LambdaCase
+        MultiParamTypeClasses
+        OverloadedStrings
+        PartialTypeSignatures
+        PatternSynonyms
+        PolyKinds
+        RankNTypes
+        ScopedTypeVariables
+        StandaloneDeriving
+        TupleSections
+        TypeFamilies
+        TypeApplications
+        TypeFamilyDependencies
+        TypeOperators
+        ViewPatterns
