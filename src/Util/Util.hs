@@ -37,6 +37,10 @@ infixl 4 <<*>>
 (<<*>>) :: (Applicative f, Applicative g) => f (g (a -> b)) -> f (g a) -> f (g b)
 (<<*>>) = liftA2 (<*>)
 
+infixl 4 <<<*>>>
+(<<<*>>>) :: (Applicative f, Applicative g, Applicative h) => f (g (h (a -> b))) -> f (g (h a)) -> f (g (h b))
+(<<<*>>>) = liftA2 (<<*>>)
+
 biVoid :: Bifunctor p => p a b -> p () ()
 biVoid = bimap (const ()) (const ())
 
