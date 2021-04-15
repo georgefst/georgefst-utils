@@ -3,6 +3,8 @@ module Util.Util where
 import Control.Applicative (liftA2)
 import Data.Bifunctor (Bifunctor (bimap))
 import Data.Bool (bool)
+import Data.Foldable (find)
+import Data.List.Extra (enumerate)
 import Data.List.NonEmpty (NonEmpty)
 import Data.Map qualified as Map
 import Data.Proxy (Proxy (Proxy))
@@ -13,6 +15,16 @@ import GHC.TypeLits (KnownSymbol, symbolVal)
 import System.Directory (listDirectory)
 import System.FilePath ((</>))
 import Type.Reflection (Typeable, typeRep)
+
+-- | Invert a function. 'a' must be a finite type (and for efficiency, should be very small).
+invert :: (Enum a, Bounded a, Eq b) => (a -> b) -> b -> Maybe a
+invert = invert' enumerate
+
+{- | A generalisation of 'invert'. The first argument is the sub-domain of the function on which to invert.
+As with 'invert', this list must be finite, and should be small.
+-}
+invert' :: Eq b => [a] -> (a -> b) -> b -> Maybe a
+invert' xs f y = fst <$> find ((== y) . snd) [(x, f x) | x <- xs]
 
 applyWhen :: Bool -> (a -> a) -> a -> a
 applyWhen = flip $ bool id
