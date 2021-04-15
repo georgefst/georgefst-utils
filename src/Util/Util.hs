@@ -56,8 +56,9 @@ infixl 4 <<<*>>>
 biVoid :: Bifunctor p => p a b -> p () ()
 biVoid = bimap (const ()) (const ())
 
-untilLeft :: Monad m => m (Either e a) -> m e
-untilLeft x = x >>= either pure (const $ untilLeft x)
+-- | Perform an action repeatedly until it errors. And run a callback on each success.
+untilLeft :: Monad m => (a -> m ()) -> m (Either e a) -> m e
+untilLeft f x = x >>= either pure (\a -> f a >> untilLeft f x)
 
 mapRightM :: Monad m => (a -> m b) -> Either e a -> m (Either e b)
 mapRightM f = either (return . Left) (fmap Right . f)
