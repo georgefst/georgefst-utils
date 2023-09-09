@@ -2,9 +2,7 @@ cabal-version:       3.0
 name:                georgefst-utils
 version:             0.1.0.0
 
-library
-    exposed-modules:
-        Util.Util
+common common
     build-depends:
         base,
         bytestring,
@@ -12,12 +10,14 @@ library
         directory,
         extra,
         filepath,
+        monad-loops,
         mtl,
         pretty-simple,
         process,
+        rawfilepath,
         safe,
         text,
-    hs-source-dirs: src
+        time,
     ghc-options:
         -Wall
     default-language: Haskell2010
@@ -30,6 +30,7 @@ library
         DeriveGeneric
         DeriveTraversable
         DerivingStrategies
+        DuplicateRecordFields
         FlexibleContexts
         FlexibleInstances
         FunctionalDependencies
@@ -38,11 +39,15 @@ library
         ImportQualifiedPost
         LambdaCase
         MultiParamTypeClasses
+        NoFieldSelectors
+        NamedFieldPuns
+        OverloadedRecordDot
         OverloadedStrings
         PartialTypeSignatures
         PatternSynonyms
         PolyKinds
         RankNTypes
+        RecordWildCards
         ScopedTypeVariables
         StandaloneDeriving
         TupleSections
@@ -51,3 +56,57 @@ library
         TypeFamilyDependencies
         TypeOperators
         ViewPatterns
+
+library
+    import: common
+    hs-source-dirs: src
+    exposed-modules:
+        Util.Util
+
+library gpio-utils
+    import: common
+    visibility: public
+    hs-source-dirs: gpio-utils
+    exposed-modules:
+        Util.GPIO
+        Util.GPIO.Persistent
+    other-modules:
+        Util.GPIO.Mon
+    build-depends:
+        georgefst-utils,
+
+library streamly-utils
+    import: common
+    visibility: public
+    hs-source-dirs: streamly-utils
+    exposed-modules:
+        Util.Streamly
+    build-depends:
+        georgefst-utils,
+        streamly-core,
+        streamly,
+
+library streamly-gpio
+    import: common
+    visibility: public
+    hs-source-dirs: streamly-gpio
+    exposed-modules:
+        Util.Streamly.GPIO
+    other-modules:
+    build-depends:
+        georgefst-utils, streamly-utils, gpio-utils,
+        streamly,
+
+library streamly-okapi
+    import: common
+    visibility: public
+    hs-source-dirs: streamly-okapi
+    exposed-modules:
+        Util.Streamly.Okapi
+    build-depends:
+        georgefst-utils, streamly-utils,
+        http-types,
+        okapi,
+        streamly,
+        wai,
+        warp,

@@ -1,3 +1,4 @@
+{-# LANGUAGE NumericUnderscores #-}
 module Util.Util where
 
 import Control.Applicative (liftA2)
@@ -15,6 +16,8 @@ import GHC.TypeLits (KnownSymbol, symbolVal)
 import System.Directory (listDirectory)
 import System.FilePath ((</>))
 import Type.Reflection (Typeable, typeRep)
+import Data.Time (NominalDiffTime, nominalDiffTimeToSeconds)
+import Control.Concurrent
 
 -- | Invert a function. 'a' must be a finite type (and for efficiency, should be very small).
 invert :: (Enum a, Bounded a, Eq b) => (a -> b) -> b -> Maybe a
@@ -25,6 +28,14 @@ As with 'invert', this list must be finite, and should be small.
 -}
 invert' :: Eq b => [a] -> (a -> b) -> b -> Maybe a
 invert' xs f y = fst <$> find ((== y) . snd) [(x, f x) | x <- xs]
+
+tailSafe :: [a] -> [a]
+tailSafe = \case
+    [] -> []
+    _ : xs -> xs
+
+mwhen :: (Monoid p) => Bool -> p -> p
+mwhen b x = if b then x else mempty
 
 applyWhen :: Bool -> (a -> a) -> a -> a
 applyWhen = flip $ bool id
@@ -81,3 +92,7 @@ listDirectory' d = map (d </>) <$> listDirectory d
 
 fst4 :: (a, b, c, d) -> a
 fst4 (x, _, _, _) = x
+
+-- | A more strongly-typed version of `threadDelay`.
+threadDelay' :: NominalDiffTime -> IO ()
+threadDelay' = threadDelay . round . (* 1_000_000) . nominalDiffTimeToSeconds

@@ -1,1 +1,1 @@
-Various Haskell utility functions. Should try to get these merged in to libraries like `extra`.
+Various Haskell things which I haven't gotten around to upstreaming or releasing.
