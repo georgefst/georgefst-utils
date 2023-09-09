@@ -20,42 +20,24 @@ common common
         time,
     ghc-options:
         -Wall
-    default-language: Haskell2010
+    default-language: GHC2021
     default-extensions:
         AllowAmbiguousTypes
         BlockArguments
-        ConstraintKinds
-        DeriveFoldable
-        DeriveFunctor
-        DeriveGeneric
         DeriveTraversable
         DerivingStrategies
         DuplicateRecordFields
-        FlexibleContexts
-        FlexibleInstances
         FunctionalDependencies
         GADTs
-        GeneralisedNewtypeDeriving
-        ImportQualifiedPost
         LambdaCase
-        MultiParamTypeClasses
         NoFieldSelectors
-        NamedFieldPuns
-        NumericUnderscores
         OverloadedRecordDot
         OverloadedStrings
         PartialTypeSignatures
         PatternSynonyms
-        PolyKinds
-        RankNTypes
         RecordWildCards
-        ScopedTypeVariables
-        StandaloneDeriving
-        TupleSections
         TypeFamilies
-        TypeApplications
         TypeFamilyDependencies
-        TypeOperators
         ViewPatterns
 
 library
