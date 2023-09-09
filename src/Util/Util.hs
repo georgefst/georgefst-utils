@@ -1,4 +1,3 @@
-{-# LANGUAGE NumericUnderscores #-}
 module Util.Util where
 
 import Control.Applicative (liftA2)

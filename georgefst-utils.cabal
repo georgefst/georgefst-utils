@@ -41,6 +41,7 @@ common common
         MultiParamTypeClasses
         NoFieldSelectors
         NamedFieldPuns
+        NumericUnderscores
         OverloadedRecordDot
         OverloadedStrings
         PartialTypeSignatures
