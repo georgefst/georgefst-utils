@@ -79,6 +79,18 @@ library streamly-gpio
         georgefst-utils, streamly-utils, gpio-utils,
         streamly,
 
+library streamly-udp
+    import: common
+    visibility: public
+    hs-source-dirs: streamly-udp
+    exposed-modules:
+        Util.Streamly.UDP
+    other-modules:
+    build-depends:
+        georgefst-utils, streamly-utils,
+        network,
+        streamly,
+
 library streamly-okapi
     import: common
     visibility: public
