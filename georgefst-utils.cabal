@@ -75,7 +75,6 @@ library streamly-gpio
     hs-source-dirs: streamly-gpio
     exposed-modules:
         Util.Streamly.GPIO
-    other-modules:
     build-depends:
         georgefst-utils, streamly-utils, gpio-utils,
         streamly,
