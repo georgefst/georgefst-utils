@@ -1,6 +1,5 @@
 module Util.GPIO.Mon (mon) where
 
-import Control.Monad (unless)
 import Control.Monad.Except (MonadIO (..))
 import Control.Monad.Loops (iterateM_)
 import Data.ByteString (ByteString)
@@ -10,8 +9,8 @@ import Data.Time (diffUTCTime, getCurrentTime)
 import RawFilePath (CreatePipe (CreatePipe), proc, processStdout, setStdout, startProcess)
 import System.IO (hGetLine)
 
-mon :: (MonadIO m) => ByteString -> (Bool -> Text -> m ()) -> Double -> Int -> m () -> m ()
-mon gpioChip putLine debounce pin x = do
+mon :: (MonadIO m) => ByteString -> (Bool -> Text -> m ()) -> Double -> Int -> m ()
+mon gpioChip putLine debounce pin = do
     p <-
         liftIO . startProcess $
             proc "gpiomon" ["-b", "-f", gpioChip, encodeUtf8 . pack $ show pin]
@@ -19,7 +18,5 @@ mon gpioChip putLine debounce pin x = do
     liftIO getCurrentTime >>= iterateM_ \t0 -> do
         line <- liftIO . hGetLine $ processStdout p
         t1 <- liftIO getCurrentTime
-        let ignore = diffUTCTime t1 t0 < realToFrac debounce
-        putLine ignore $ pack line
-        unless ignore x
+        putLine (diffUTCTime t1 t0 < realToFrac debounce) (pack line)
         pure t1
