@@ -9,7 +9,7 @@ import Data.Time (NominalDiffTime, diffUTCTime, getCurrentTime)
 import RawFilePath (CreatePipe (CreatePipe), proc, processStdout, setStdout, startProcess)
 import System.IO (hGetLine)
 
-mon :: (MonadIO m) => ByteString -> (Bool -> Text -> NominalDiffTime -> m ()) -> Double -> Int -> m ()
+mon :: (MonadIO m) => ByteString -> (Bool -> Text -> NominalDiffTime -> m ()) -> NominalDiffTime -> Int -> m ()
 mon gpioChip putLine debounce pin = do
     p <-
         liftIO . startProcess $
@@ -19,5 +19,5 @@ mon gpioChip putLine debounce pin = do
         line <- liftIO . hGetLine $ processStdout p
         t1 <- liftIO getCurrentTime
         let interval = diffUTCTime t1 t0
-        putLine (interval < realToFrac debounce) (pack line) interval
+        putLine (interval < debounce) (pack line) interval
         pure t1

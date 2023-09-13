@@ -14,7 +14,7 @@ import Util.Streamly qualified as S
 data Opts = Opts
     { chip :: ByteString
     , pin :: Int
-    , debounce :: Double
+    , debounce :: NominalDiffTime
     , window :: NominalDiffTime
     }
 
