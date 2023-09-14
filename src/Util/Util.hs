@@ -1,6 +1,7 @@
 module Util.Util where
 
 import Control.Applicative (liftA2)
+import Control.Concurrent (threadDelay)
 import Data.Bifunctor (Bifunctor (bimap))
 import Data.Bool (bool)
 import Data.Foldable (find)
@@ -10,13 +11,12 @@ import Data.Map qualified as Map
 import Data.Proxy (Proxy (Proxy))
 import Data.Text (Text)
 import Data.Text qualified as T
+import Data.Time (NominalDiffTime, nominalDiffTimeToSeconds)
 import Data.Tuple.Extra (second, (&&&))
 import GHC.TypeLits (KnownSymbol, symbolVal)
 import System.Directory (listDirectory)
 import System.FilePath ((</>))
 import Type.Reflection (Typeable, typeRep)
-import Data.Time (NominalDiffTime, nominalDiffTimeToSeconds)
-import Control.Concurrent
 
 -- | Invert a function. 'a' must be a finite type (and for efficiency, should be very small).
 invert :: (Enum a, Bounded a, Eq b) => (a -> b) -> b -> Maybe a
