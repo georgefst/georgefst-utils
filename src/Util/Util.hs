@@ -25,7 +25,7 @@ invert = invert' enumerate
 {- | A generalisation of 'invert'. The first argument is the sub-domain of the function on which to invert.
 As with 'invert', this list must be finite, and should be small.
 -}
-invert' :: Eq b => [a] -> (a -> b) -> b -> Maybe a
+invert' :: (Eq b) => [a] -> (a -> b) -> b -> Maybe a
 invert' xs f y = fst <$> find ((== y) . snd) [(x, f x) | x <- xs]
 
 tailSafe :: [a] -> [a]
@@ -39,16 +39,16 @@ mwhen b x = if b then x else mempty
 applyWhen :: Bool -> (a -> a) -> a -> a
 applyWhen = flip $ bool id
 
-clamp :: Ord c => (c, c) -> c -> c
+clamp :: (Ord c) => (c, c) -> c -> c
 clamp (l, u) = max l . min u
 
-symbolValT :: forall a. KnownSymbol a => Text
+symbolValT :: forall a. (KnownSymbol a) => Text
 symbolValT = T.pack $ symbolVal $ Proxy @a
 
-showT :: Show a => a -> Text
+showT :: (Show a) => a -> Text
 showT = T.pack . show
 
-typeRepT :: forall a. Typeable a => Text
+typeRepT :: forall a. (Typeable a) => Text
 typeRepT = showT $ typeRep @a
 
 infixl 4 <<$>>
@@ -63,26 +63,26 @@ infixl 4 <<<*>>>
 (<<<*>>>) :: (Applicative f, Applicative g, Applicative h) => f (g (h (a -> b))) -> f (g (h a)) -> f (g (h b))
 (<<<*>>>) = liftA2 (<<*>>)
 
-biVoid :: Bifunctor p => p a b -> p () ()
+biVoid :: (Bifunctor p) => p a b -> p () ()
 biVoid = bimap (const ()) (const ())
 
 -- | Perform an action repeatedly until it errors. And run a callback on each success.
-untilLeft :: Monad m => (a -> m ()) -> m (Either e a) -> m e
+untilLeft :: (Monad m) => (a -> m ()) -> m (Either e a) -> m e
 untilLeft f x = x >>= either pure (\a -> f a >> untilLeft f x)
 
-mapRightM :: Monad m => (a -> m b) -> Either e a -> m (Either e b)
+mapRightM :: (Monad m) => (a -> m b) -> Either e a -> m (Either e b)
 mapRightM f = either (return . Left) (fmap Right . f)
 
 -- | Like 'groupOn', but with non-adjacent elements grouped, and the witness to equality returned.
-classifyOn :: Ord b => (a -> b) -> [a] -> [(b, NonEmpty a)]
+classifyOn :: (Ord b) => (a -> b) -> [a] -> [(b, NonEmpty a)]
 classifyOn f = Map.toList . Map.fromListWith (<>) . map (f &&& pure)
 
 -- | Special case of 'classifyOn'.
-classifyOnFst :: Ord a => [(a, b)] -> [(a, NonEmpty b)]
+classifyOnFst :: (Ord a) => [(a, b)] -> [(a, NonEmpty b)]
 classifyOnFst = second (fmap snd) <<$>> classifyOn fst
 
 -- | See 'classifyOnFst'.
-classifyOnSnd :: Ord b => [(a, b)] -> [(b, NonEmpty a)]
+classifyOnSnd :: (Ord b) => [(a, b)] -> [(b, NonEmpty a)]
 classifyOnSnd = second (fmap fst) <<$>> classifyOn snd
 
 -- | Like 'listDirectory', but returns paths relative to the input.
