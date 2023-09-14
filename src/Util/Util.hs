@@ -95,3 +95,10 @@ fst4 (x, _, _, _) = x
 -- | A more strongly-typed version of `threadDelay`.
 threadDelay' :: NominalDiffTime -> IO ()
 threadDelay' = threadDelay . round . (* 1_000_000) . nominalDiffTimeToSeconds
+
+(.:) :: (c -> c') -> (a -> b -> c) -> a -> b -> c'
+(.:) = (.) . (.)
+(.:.) :: (d -> d') -> (a -> b -> c -> d) -> a -> b -> c -> d'
+(.:.) = (.:) . (.)
+(.::) :: (e -> e') -> (a -> b -> c -> d -> e) -> a -> b -> c -> d -> e'
+(.::) = (.:.) . (.)
