@@ -6,7 +6,7 @@ from documentation I've seen, the other behaviour seems to be what is supposed t
 module Util.GPIO.Persistent (Handle, reset, set, mon) where
 
 import Control.Monad (void)
-import Control.Monad.Except (MonadIO (..))
+import Control.Monad.IO.Class (MonadIO (..))
 import Data.ByteString (ByteString)
 import Data.Text (pack)
 import Data.Text.Encoding (encodeUtf8)

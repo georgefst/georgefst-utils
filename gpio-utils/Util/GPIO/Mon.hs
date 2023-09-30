@@ -1,6 +1,6 @@
 module Util.GPIO.Mon (mon) where
 
-import Control.Monad.Except (MonadIO (..))
+import Control.Monad.IO.Class (MonadIO (..))
 import Control.Monad.Loops (iterateM_)
 import Data.ByteString (ByteString)
 import Data.Text (Text, pack)

@@ -2,7 +2,7 @@
 -- TODO get a proper Haskell GPIO library (hpio?) working with the modern `libgpiod` interface
 module Util.GPIO (Handle, reset, set, mon) where
 
-import Control.Monad.Except (MonadIO (..))
+import Control.Monad.IO.Class (MonadIO (..))
 import Data.ByteString (ByteString)
 import Data.Text (pack)
 import Data.Text.Encoding (encodeUtf8)
