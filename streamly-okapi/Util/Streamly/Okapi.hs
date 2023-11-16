@@ -1,19 +1,19 @@
--- TODO update to new Okapi as soon as it's released: https://github.com/monadicsystems/okapi/issues/30
 module Util.Streamly.Okapi where
 
 import Control.Monad.State.Strict (MonadIO (..))
-import Data.Foldable (asum)
 import Data.Tuple.Extra (curry3, uncurry3)
-import Network.HTTP.Types (Status)
-import Network.Wai (Request)
+import Network.HTTP.Types (Status, status404)
+import Network.Wai (Request, responseLBS)
 import Network.Wai.Handler.Warp qualified as Warp
-import Okapi (OkapiT, Result, makeOkapiApp)
+import Okapi.App (Node, choice, withDefault)
 import Streamly.Data.Stream.Prelude qualified as S
 import Util.Streamly qualified as S
 
 data Opts a = Opts
     { warpSettings :: Warp.Settings -- TODO what if the settings passed in override the logger? just say not to in Haddocks?
-    , routes :: [OkapiT IO (a, OkapiT IO Result)]
+    -- TODO I'm not really happy about the callbacky-ness of this
+    -- ask Okapi maintainer to consider such use cases while developing the new API?
+    , routes :: (a -> IO ()) -> [Node '[]]
     }
 
 data Item a
@@ -26,11 +26,5 @@ stream ::
     S.Stream m (Item a)
 stream Opts{..} = S.morphInner liftIO $ S.fromEmitter \f ->
     Warp.runSettings (Warp.setLogger (curry3 $ f . uncurry3 WarpLog) warpSettings)
-        . makeOkapiApp id
-        . asum
-        $ map
-            ( (=<<) \(a, r) -> do
-                liftIO $ f $ Event a -- put action in the stream
-                r -- return result to client
-            )
-            routes
+        . withDefault (choice . routes $ f . Event)
+        $ \_ resp -> resp $ responseLBS status404 [] "Not Found..."

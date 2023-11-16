@@ -24,6 +24,7 @@ common common
     default-extensions:
         AllowAmbiguousTypes
         BlockArguments
+        DataKinds
         DeriveTraversable
         DerivingStrategies
         DuplicateRecordFields
