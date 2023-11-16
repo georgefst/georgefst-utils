@@ -99,6 +99,7 @@ library streamly-okapi
         Util.Streamly.Okapi
     build-depends:
         georgefst-utils, streamly-utils,
+        http-api-data,
         http-types,
         okapi,
         streamly,
