@@ -96,6 +96,7 @@ fst4 (x, _, _, _) = x
 threadDelay' :: NominalDiffTime -> IO ()
 threadDelay' = threadDelay . round . (* 1_000_000) . nominalDiffTimeToSeconds
 
+infixr 8 .:, .:., .::
 (.:) :: (c -> c') -> (a -> b -> c) -> a -> b -> c'
 (.:) = (.) . (.)
 (.:.) :: (d -> d') -> (a -> b -> c -> d) -> a -> b -> c -> d'
