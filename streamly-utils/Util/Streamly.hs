@@ -9,7 +9,7 @@ import Data.Tuple.Extra (thd3)
 import Streamly.Data.Stream.Prelude qualified as S
 import Streamly.Data.StreamK qualified as SK
 import Streamly.Internal.Data.Stream qualified as S
-import Streamly.Internal.Data.Stream.StreamK qualified as SK
+import Streamly.Internal.Data.StreamK qualified as SK
 import Util.Util (threadDelay')
 
 -- TODO look at `S.bracket` implementation for better way to do this?
