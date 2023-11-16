@@ -1,13 +1,13 @@
 module Util.Streamly.Okapi where
 
 import Control.Monad.State.Strict (MonadIO (..))
-import Data.Tuple.Extra (curry3, uncurry3)
 import Network.HTTP.Types (Status, status404)
 import Network.Wai (Request, responseLBS)
 import Network.Wai.Handler.Warp qualified as Warp
 import Okapi.App (Node, choice, withDefault)
 import Streamly.Data.Stream.Prelude qualified as S
 import Util.Streamly qualified as S
+import Util.Util ((.:.))
 
 data Opts a = Opts
     { warpSettings :: Warp.Settings -- TODO what if the settings passed in override the logger? just say not to in Haddocks?
@@ -25,6 +25,6 @@ stream ::
     Opts a ->
     S.Stream m (Item a)
 stream Opts{..} = S.morphInner liftIO $ S.fromEmitter \f ->
-    Warp.runSettings (Warp.setLogger (curry3 $ f . uncurry3 WarpLog) warpSettings)
+    Warp.runSettings (Warp.setLogger (f .:. WarpLog) warpSettings)
         . withDefault (choice . routes $ f . Event)
         $ \_ resp -> resp $ responseLBS status404 [] "Not Found..."
