@@ -2,3 +2,10 @@ packages: .
 
 allow-newer:
     okapi:*,
+
+source-repository-package
+    type: git
+    location: https://github.com/monadicsystems/okapi
+    tag: d502f56eddff53d960ffe9cf687fa6f86397ab93
+    subdir: lib
+    --sha256: ivNvLHgoPDK3u1sSba5PK/x23OGku3cznmXJi86+IDw=
