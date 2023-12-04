@@ -20,4 +20,4 @@ set gpioChip xs =
         . fmap Handle
         . startProcess
         . proc "gpioset"
-        $ "--mode=signal" : gpioChip : map ((<> "=1") . encodeUtf8 . pack . show) xs
+        $ "--chip" : gpioChip : map ((<> "=1") . encodeUtf8 . pack . show) xs
