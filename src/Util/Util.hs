@@ -1,6 +1,5 @@
 module Util.Util where
 
-import Control.Applicative (liftA2)
 import Control.Concurrent (threadDelay)
 import Data.Bifunctor (Bifunctor (bimap))
 import Data.Bool (bool)
