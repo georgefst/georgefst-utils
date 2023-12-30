@@ -1,7 +1,6 @@
 module Util.Streamly.GPIO where
 
 import Data.ByteString (ByteString)
-import Data.Text (Text)
 import Data.Time (NominalDiffTime)
 import Streamly.Data.Stream.Prelude qualified as S
 import Util.GPIO qualified as GPIO
@@ -13,10 +12,6 @@ data Opts = Opts
     , debounce :: NominalDiffTime
     }
 
-data Item
-    = Event
-    | OutLine {line :: Text}
-
-stream :: (S.MonadAsync m) => Opts -> S.Stream m Item
+stream :: (S.MonadAsync m) => Opts -> S.Stream m ()
 stream Opts{..} = S.fromEmitter \f ->
-    GPIO.mon chip (\line -> f OutLine{..} >> f Event) debounce pin
+    GPIO.mon chip (f ()) debounce pin
