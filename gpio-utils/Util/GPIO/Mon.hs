@@ -15,10 +15,12 @@ mon :: (MonadIO m) => ByteString -> (Bool -> Text -> m ()) -> NominalDiffTime ->
 mon gpioChip putLine debounce pin = do
     p <-
         liftIO . startProcess $
-            proc "gpiomon" ["--edges", "falling", "--chip", gpioChip, encodeUtf8 . pack $ show pin]
+            proc "gpiomon" ["--edges", "falling", "--chip", gpioChip, showBS pin]
                 `setStdout` CreatePipe
     liftIO getCurrentTime >>= iterateM_ \t0 -> do
         line <- liftIO . hGetLine $ processStdout p
         t1 <- liftIO getCurrentTime
         putLine (diffUTCTime t1 t0 > debounce) (pack line)
         pure t1
+  where
+    showBS = encodeUtf8 . pack . show
