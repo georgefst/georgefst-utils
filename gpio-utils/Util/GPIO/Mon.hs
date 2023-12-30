@@ -9,8 +9,6 @@ import Data.Time (NominalDiffTime, nominalDiffTimeToSeconds)
 import RawFilePath (CreatePipe (CreatePipe), proc, processStdout, setStdout, startProcess)
 import System.IO (hGetLine)
 
--- TODO "debounced" events are very often just the button being released
--- if we had a way to distinguish (which I think we would if not for dodgy wires), we could set the threshold much lower
 mon :: (MonadIO m) => ByteString -> m () -> NominalDiffTime -> Int -> m ()
 mon gpioChip action debounce pin = do
     p <-
