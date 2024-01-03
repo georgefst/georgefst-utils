@@ -42,15 +42,11 @@ groupByTime interval =
                 Left i -> (i, Nothing)
                 Right x -> (lastEvent, Just x)
             )
-        . S.parConcatMap
-            id
-            ( \(i, x) ->
-                S.parList
-                    id
-                    -- indicates where the `i`'th event actually occurred
-                    [ S.fromPure $ Left i
-                    , -- the `i`'th event, delayed by `interval`
-                      S.fromEffect $ liftIO (threadDelay' interval) >> pure (Right (i, x))
-                    ]
-            )
+        . S.parList id
+        . sequence
+            -- the original stream - indicates where each event actually occurred
+            [ fmap (Left . fst)
+            , -- each event delayed by `interval`
+              S.mapM (\x -> liftIO (threadDelay' interval) >> pure (Right x))
+            ]
         . S.zipWith (,) (S.enumerateFrom @Int 0)
