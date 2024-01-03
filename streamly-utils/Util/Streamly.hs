@@ -4,11 +4,10 @@ import Control.Concurrent (newEmptyMVar, putMVar, takeMVar)
 import Control.Monad.IO.Class (liftIO)
 import Data.List.NonEmpty (NonEmpty, nonEmpty)
 import Data.Maybe (fromMaybe)
-import Data.Time (NominalDiffTime, diffUTCTime, getCurrentTime)
-import Data.Tuple.Extra (thd3)
+import Data.Time (NominalDiffTime)
+import Streamly.Data.Fold.Prelude qualified as SF
 import Streamly.Data.Stream.Prelude qualified as S
 import Streamly.Data.StreamK qualified as SK
-import Streamly.Internal.Data.Stream qualified as S
 import Streamly.Internal.Data.StreamK qualified as SK
 import Util.Util (threadDelay')
 
@@ -30,28 +29,28 @@ fromEmitter f = withInit (liftIO newEmptyMVar) \m ->
 partitionEithers :: (Monad m) => S.Stream m (Either a b) -> (S.Stream m a, S.Stream m b)
 partitionEithers s = (S.catLefts s, S.catRights s)
 
--- TODO use `StateT` internally for more readable implementation
--- TODO use `DList` internally for performance
--- TODO avoid internal uses of `error`
--- group events which are less then the given interval
+-- | Group events which occur within the given interval of each other.
 groupByTime :: (S.MonadAsync m) => NominalDiffTime -> S.Stream m a -> S.Stream m (NonEmpty a)
-groupByTime interval = fmap (fromMaybe (error "groupByTime") . nonEmpty) . f2 . f1
-  where
-    -- delay everything by `interval`, and insert 'Nothing' markers where the value first came in
-    f1 =
-        S.parConcat id . fmap \x ->
-            S.cons Nothing $ S.fromEffect (liftIO (threadDelay' interval) >> pure (Just x))
-    -- ignore any event which appears within `interval` of a 'Nothing'
-    f2 =
-        S.mapMaybe id . fmap thd3 . flip S.postscanlM' (pure (const False, [], error "groupByTime")) \(tooSoon, this, _) -> \case
-            Just x -> do
-                t <- liftIO getCurrentTime
-                pure
-                    if tooSoon t
-                        then (tooSoon, new, Nothing)
-                        else (tooSoon, [], Just new)
-              where
-                new = this ++ [x]
-            Nothing -> do
-                t <- liftIO getCurrentTime
-                pure (\t' -> diffUTCTime t' t < interval, this, Nothing)
+groupByTime interval =
+    fmap (fromMaybe (error "groupByTime 1") . nonEmpty . fmap (snd . fst))
+        -- each group ends with the event where `i == lastEvent`
+        -- i.e. where no other event has been seen after `interval`
+        . S.foldMany (SF.takeEndBy (\((i, _), lastEvent) -> i == lastEvent) SF.toList)
+        . S.mapMaybe (\(lastEvent, x) -> (,lastEvent) <$> x)
+        . S.postscan
+            ( flip SF.foldl' (error "groupByTime 2", Nothing) \(lastEvent, _) -> \case
+                Left i -> (i, Nothing)
+                Right x -> (lastEvent, Just x)
+            )
+        . S.parConcatMap
+            id
+            ( \(i, x) ->
+                S.parList
+                    id
+                    -- indicates where the `i`'th event actually occurred
+                    [ S.fromPure $ Left i
+                    , -- the `i`'th event, delayed by `interval`
+                      S.fromEffect $ liftIO (threadDelay' interval) >> pure (Right (i, x))
+                    ]
+            )
+        . S.zipWith (,) (S.enumerateFrom @Int 0)
