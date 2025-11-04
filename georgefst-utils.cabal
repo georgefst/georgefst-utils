@@ -56,7 +56,6 @@ library gpio-utils
         Util.GPIO.Mon
     build-depends:
         georgefst-utils,
-        rawfilepath,
 
 library streamly-utils
     import: common
