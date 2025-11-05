@@ -47,6 +47,8 @@ library
 
 library gpio-utils
     import: common
+    if os(windows)
+        buildable: False
     visibility: public
     hs-source-dirs: gpio-utils
     exposed-modules:
@@ -71,6 +73,8 @@ library streamly-utils
 
 library streamly-gpio
     import: common
+    if os(windows)
+        buildable: False
     visibility: public
     hs-source-dirs: streamly-gpio
     exposed-modules:
