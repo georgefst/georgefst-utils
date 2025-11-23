@@ -94,17 +94,3 @@ library streamly-udp
         georgefst-utils, streamly-utils,
         network,
         streamly,
-
-library streamly-okapi
-    import: common
-    visibility: public
-    hs-source-dirs: streamly-okapi
-    exposed-modules:
-        Util.Streamly.Okapi
-    build-depends:
-        georgefst-utils, streamly-utils,
-        http-types,
-        okapi,
-        streamly,
-        wai,
-        warp,
