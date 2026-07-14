@@ -1,29 +1,30 @@
 -- TODO use backpack?
 
-{- | a drop-in replacement for `Util.GPIO` for systems (RPiOS) where `gpioset` commands are weirdly persistent
-from documentation I've seen, the other behaviour seems to be what is supposed to happen
+{- | a drop-in replacement for `Util.GPIO` for systems where GPIO pins prefer to be set persistently
+investigations continue, but it seems that this approach is more suited to the Raspberry Pi 5's chip, but not the Pi 3
 -}
 module Util.GPIO.Persistent (Handle, reset, set, mon) where
 
-import Control.Monad (void)
 import Control.Monad.IO.Class (MonadIO (..))
-import Data.ByteString (ByteString)
-import Data.Text (pack)
-import Data.Text.Encoding (encodeUtf8)
-import RawFilePath (proc, readProcessWithExitCode)
+import System.OsString.Posix (PosixString, unsafeEncodeUtf)
 import Util.GPIO.Mon (mon)
+import Util.Posix.Process (runAndWait)
 
-data Handle = Handle ByteString [Int]
+data Handle = Handle PosixString [Int]
 
 reset :: (MonadIO m) => Handle -> m ()
-reset (Handle gpioChip xs) =
-    void . liftIO $
-        readProcessWithExitCode . proc "gpioset" $
-            gpioChip : map ((<> "=0") . encodeUtf8 . pack . show) xs
+reset (Handle gpioChip xs) = gpioset gpioChip (unsafeEncodeUtf "0") xs
 
-set :: (MonadIO m) => ByteString -> [Int] -> m Handle
+set :: (MonadIO m) => PosixString -> [Int] -> m Handle
 set gpioChip xs = do
-    void . liftIO $
-        readProcessWithExitCode . proc "gpioset" $
-            gpioChip : map ((<> "=1") . encodeUtf8 . pack . show) xs
+    gpioset gpioChip (unsafeEncodeUtf "1") xs
     pure $ Handle gpioChip xs
+
+gpioset :: (MonadIO m) => PosixString -> PosixString -> [Int] -> m ()
+gpioset gpioChip value xs =
+    liftIO $
+        runAndWait
+            (unsafeEncodeUtf "gpioset")
+            ( [unsafeEncodeUtf "--chip", gpioChip, unsafeEncodeUtf "--toggle", unsafeEncodeUtf "0"]
+                <> map ((<> unsafeEncodeUtf "=" <> value) . unsafeEncodeUtf . show @Int) xs
+            )

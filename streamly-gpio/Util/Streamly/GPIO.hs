@@ -1,13 +1,13 @@
 module Util.Streamly.GPIO where
 
-import Data.ByteString (ByteString)
 import Data.Time (NominalDiffTime)
 import Streamly.Data.Stream.Prelude qualified as S
+import System.OsString.Posix (PosixString)
 import Util.GPIO qualified as GPIO
 import Util.Streamly qualified as S
 
 data Opts = Opts
-    { chip :: ByteString
+    { chip :: PosixString
     , pin :: Int
     , debounce :: NominalDiffTime
     }

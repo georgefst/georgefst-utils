@@ -56,9 +56,11 @@ library gpio-utils
         Util.GPIO.Persistent
     other-modules:
         Util.GPIO.Mon
+        Util.Posix.Process
     build-depends:
         georgefst-utils,
-        rawfilepath,
+        os-string,
+        unix,
 
 library streamly-utils
     import: common
@@ -81,6 +83,7 @@ library streamly-gpio
         Util.Streamly.GPIO
     build-depends:
         georgefst-utils, streamly-utils, gpio-utils,
+        os-string,
         streamly,
 
 library streamly-udp

@@ -3,21 +3,22 @@
 module Util.GPIO (Handle, reset, set, mon) where
 
 import Control.Monad.IO.Class (MonadIO (..))
-import Data.ByteString (ByteString)
-import Data.Text (pack)
-import Data.Text.Encoding (encodeUtf8)
-import RawFilePath (Inherit, Process, proc, startProcess, terminateProcess)
+import System.OsString.Posix (PosixString, unsafeEncodeUtf)
+import System.Posix.Types (ProcessID)
 import Util.GPIO.Mon (mon)
+import Util.Posix.Process (spawn, terminateAndWait)
 
-newtype Handle = Handle {unwrap :: Process Inherit Inherit Inherit}
+newtype Handle = Handle {unwrap :: ProcessID}
 
 reset :: (MonadIO m) => Handle -> m ()
-reset h = liftIO $ terminateProcess h.unwrap
+reset h = liftIO $ terminateAndWait h.unwrap
 
-set :: (MonadIO m) => ByteString -> [Int] -> m Handle
+set :: (MonadIO m) => PosixString -> [Int] -> m Handle
 set gpioChip xs =
     liftIO
         . fmap Handle
-        . startProcess
-        . proc "gpioset"
-        $ "--chip" : gpioChip : map ((<> "=1") . encodeUtf8 . pack . show) xs
+        $ spawn
+            (unsafeEncodeUtf "gpioset")
+            ( [unsafeEncodeUtf "--chip", gpioChip]
+                <> map ((<> unsafeEncodeUtf "=1") . unsafeEncodeUtf . show @Int) xs
+            )
